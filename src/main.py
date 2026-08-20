@@ -5,6 +5,8 @@ import uuid
 import queue
 from typing import Optional
 from fastapi import FastAPI, HTTPException, status
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 import paho.mqtt.client as mqtt
@@ -14,10 +16,13 @@ load_dotenv()
 from db import ClickHouseManager
 
 app = FastAPI(
-    title="Sauron Vision - Central Cloud API",
-    description="API de Ingesta, Comandos y Gestión Centralizada para Sauron Vision SaaS",
+    title="Sauron Vision - Central Cloud API & Live Panel",
+    description="API de Ingesta, Comandos y Panel Web para Sauron Vision SaaS",
     version="0.3.0"
 )
+
+# Montar archivos estáticos para el Frontend
+app.mount("/static", StaticFiles(directory="src/static"), name="static")
 
 db_manager = ClickHouseManager()
 
@@ -42,6 +47,11 @@ class CommandRequest(BaseModel):
     action: str = Field(..., example="ping")  # ping, start_stream, reconfigure_zones
     command_id: Optional[str] = Field(default=None, example="cmd_001")
     payload: dict = Field(default_factory=dict, example={"camera_id": "webcam_laptop"})
+
+@app.get("/")
+def read_index():
+    """Sirve la página de inicio del Dashboard / Panel de Control Web."""
+    return FileResponse("src/static/index.html")
 
 @app.get("/health")
 def health_check():

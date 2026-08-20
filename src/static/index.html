@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sauron Vision - Live Streaming & Control Panel</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="logo-container">
+                <span class="eye-icon">👁️</span>
+                <h1>Sauron Vision <span class="badge-tag">SaaS Live</span></h1>
+            </div>
+            <div class="system-status">
+                <span class="status-dot online"></span>
+                <span id="systemStatusText">Sistema Cloud Operativo</span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Sidebar / Control Panel -->
+            <section class="control-card glass-panel">
+                <h2>🎛️ Control de Dispositivo</h2>
+                
+                <div class="form-group">
+                    <label for="tenantId">Tenant ID (Cliente):</label>
+                    <input type="text" id="tenantId" value="tenant_poc" placeholder="ej: tenant_poc">
+                </div>
+
+                <div class="form-group">
+                    <label for="siteId">Site ID (Sede / Local):</label>
+                    <input type="text" id="siteId" value="site_home" placeholder="ej: site_home">
+                </div>
+
+                <div class="form-group">
+                    <label for="cameraId">Cámara ID:</label>
+                    <input type="text" id="cameraId" value="webcam_laptop" placeholder="ej: webcam_laptop">
+                </div>
+
+                <div class="action-buttons">
+                    <button id="btnStartStream" class="btn btn-primary">
+                        <span class="btn-icon">🎥</span> Ver Cámara en Vivo
+                    </button>
+                    <button id="btnPing" class="btn btn-secondary">
+                        <span class="btn-icon">📡</span> Probar Estado (Ping)
+                    </button>
+                </div>
+            </section>
+
+            <!-- Video Player Section -->
+            <section class="player-card glass-panel">
+                <div class="player-header">
+                    <h3>📺 Transmisión Limpia con Detección IA en Vivo</h3>
+                    <div class="player-controls">
+                        <button id="btnStopStream" class="btn-stop hidden">⏹️ Detener Stream</button>
+                        <div id="streamBadge" class="stream-badge offline">
+                            <span class="badge-dot"></span> <span id="streamBadgeText">STANDBY</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="video-wrapper" id="videoWrapper">
+                    <div class="placeholder-overlay" id="placeholderOverlay">
+                        <div class="placeholder-content">
+                            <span class="camera-placeholder-icon">📹</span>
+                            <p>Presioná <strong>"Ver Cámara en Vivo"</strong> para solicitar el stream de video limpio con superposición de IA.</p>
+                            <span class="hint-text">Consumo de ancho de banda: 0 KB/s mientras no haya sesión activa.</span>
+                        </div>
+                    </div>
+                    <img id="streamImagePlayer" class="stream-img hidden" alt="Transmisión en Vivo de Cámara">
+                </div>
+            </section>
+        </main>
+
+        <!-- Diagnostic Console -->
+        <section class="console-card glass-panel">
+            <div class="console-header">
+                <h4>💻 Consola de Respuestas HTTP / MQTT Status</h4>
+                <button id="btnClearConsole" class="btn-small">Limpiar</button>
+            </div>
+            <pre id="consoleOutput" class="console-log">-- Esperando comandos del usuario...</pre>
+        </section>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

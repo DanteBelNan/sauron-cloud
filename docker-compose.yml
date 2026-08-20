@@ -1,6 +1,16 @@
 version: '3.8'
 
 services:
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: sauron_cloud_mosquitto
+    restart: always
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+
   clickhouse:
     image: clickhouse/clickhouse-server:23.8
     container_name: sauron_cloud_clickhouse
