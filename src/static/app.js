@@ -54,6 +54,16 @@ document.addEventListener("DOMContentLoaded", () => {
         consoleOutput.textContent = formattedMessage + "\n\n" + consoleOutput.textContent;
     }
 
+    function resetEditingState() {
+        isEditing = false;
+        btnEditZones.textContent = "✏️ Editar Hitboxes";
+        btnEditZones.classList.add("hidden");
+        btnSaveZones.classList.add("hidden");
+        zoneCanvas.classList.add("hidden");
+        draggingZone = null;
+        draggingPointIndex = -1;
+    }
+
     function setStreamState(online, text = "STANDBY") {
         streamBadgeText.textContent = text;
         if (online) {
@@ -66,14 +76,14 @@ document.addEventListener("DOMContentLoaded", () => {
             streamBadge.className = "stream-badge offline";
             streamImagePlayer.classList.add("hidden");
             btnStopStream.classList.add("hidden");
-            btnEditZones.classList.add("hidden");
-            btnSaveZones.classList.add("hidden");
-            zoneCanvas.classList.add("hidden");
-            isEditing = false;
+            resetEditingState();
             streamImagePlayer.src = "";
             placeholderOverlay.style.display = "flex";
         }
     }
+
+    // Inicializar estado limpio desde el inicio
+    setStreamState(false, "STANDBY");
 
     function updateZonesFromEdge(currentZones) {
         if (!currentZones || Object.keys(currentZones).length === 0) return;
@@ -210,9 +220,8 @@ document.addEventListener("DOMContentLoaded", () => {
             zoneCanvas.classList.remove("hidden");
             resizeCanvas();
         } else {
-            btnEditZones.textContent = "✏️ Editar Hitboxes";
-            btnSaveZones.classList.add("hidden");
-            zoneCanvas.classList.add("hidden");
+            resetEditingState();
+            btnEditZones.classList.remove("hidden");
         }
     });
 
@@ -239,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         logToConsole(`Enviando reconfiguración de zonas para '${cameraId}'...`, formattedZones);
 
-        // Cortar la conexión del stream mientras el Edge se recarga
+        // Cortar la conexión del stream y resetear estado de edición mientras el Edge se recarga
         setStreamState(false, "RECARGANDO EDGE...");
 
         try {
