@@ -44,6 +44,17 @@
                     <input type="text" id="cameraId" value="camara_ip" placeholder="ej: camara_ip">
                 </div>
 
+                <!-- Bloque de Nombres de Hitboxes (Preparado para Etapa 2) -->
+                <div class="form-group">
+                    <label for="zoneAName">Zona A (Conteo Entrada):</label>
+                    <input type="text" id="zoneAName" value="zona_extremo_a" disabled class="input-disabled" title="Bloqueado temporalmente en Etapa 1">
+                </div>
+
+                <div class="form-group">
+                    <label for="zoneBName">Zona B (Conteo Salida):</label>
+                    <input type="text" id="zoneBName" value="zona_extremo_b" disabled class="input-disabled" title="Bloqueado temporalmente en Etapa 1">
+                </div>
+
                 <div class="action-buttons">
                     <button id="btnStartStream" class="btn btn-primary">
                         <span class="btn-icon">🎥</span> Ver Cámara en Vivo
@@ -59,6 +70,8 @@
                 <div class="player-header">
                     <h3>📺 Transmisión Limpia con Detección IA en Vivo</h3>
                     <div class="player-controls">
+                        <button id="btnEditZones" class="btn-secondary btn-small hidden">✏️ Editar Hitboxes</button>
+                        <button id="btnSaveZones" class="btn-primary btn-small hidden">💾 Aplicar Zonas</button>
                         <button id="btnStopStream" class="btn-stop hidden">⏹️ Detener Stream</button>
                         <div id="streamBadge" class="stream-badge offline">
                             <span class="badge-dot"></span> <span id="streamBadgeText">STANDBY</span>
@@ -75,6 +88,7 @@
                         </div>
                     </div>
                     <img id="streamImagePlayer" class="stream-img hidden" alt="Transmisión en Vivo de Cámara">
+                    <canvas id="zoneCanvas" class="zone-canvas hidden"></canvas>
                 </div>
             </section>
         </main>

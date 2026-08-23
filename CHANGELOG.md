@@ -4,15 +4,22 @@ Todos los cambios notables en el servidor central cloud serán documentados en e
 
 ---
 
+## [0.3.2] - 2026-08-23 (Ticket 3: Editor de Hitboxes en Canvas & Sincronización de Zonas)
+
+### Agregado
+- **Capa Canvas HTML5 Interfaz de Zonas (`src/static/`)**:
+  - Puntos de agarre (*handles*) arrastrables para redimensionar vértices de `zona_extremo_a` y `zona_extremo_b` sobre el video en vivo de la cámara física.
+  - Inicialización dinámica con las coordenadas reales devueltas por el Edge.
+  - Escalado automático de coordenadas a resolución nativa `1280x720`.
+  - Botón **"Aplicar Zonas"** con aviso de recarga y desconexión automática del stream.
+
+---
+
 ## [0.3.1] - 2026-08-19 (Ticket 2: Live View Panel, Botón Detener & Broker Central Cloud)
 
 ### Agregado
-- **Contenedor Mosquitto Central Cloud (`docker-compose.yml`)**:
-  - Broker MQTT propio del Servidor Central (puerto 1883) para recibir conexiones salientes de todos los Edge Nodes y publicar comandos sin requerir abrir puertos en las sedes de los clientes.
-- **Frontend Dashboard Estático (`src/static/`)**:
-  - `index.html`, `style.css` y `app.js` en Vanilla JS/CSS.
-  - Reproductor adaptativo con indicador de estado en vivo, consola de respuestas y botón **"Detener Stream"** para cortar el tráfico de red a 0 KB/s bajo demanda.
-  - Endpoint `GET /` sirviendo el panel de control.
+- Contenedor Mosquitto Central Cloud (`docker-compose.yml`) en puerto 1883.
+- Frontend Dashboard Estático (`src/static/`) servido en `GET /`.
 
 ---
 
@@ -21,10 +28,3 @@ Todos los cambios notables en el servidor central cloud serán documentados en e
 ### Agregado
 - Endpoint de Emisión de Comandos (`POST /api/v1/commands`).
 - Construcción Dinámica de Tópicos MQTT y patrón Request-Reply con Correlation ID.
-
----
-
-## [0.2.0] - 2026-08-18 (SaaS Ingestion API & Grafana Provisioning)
-
-### Agregado
-- API Central de Ingesta (FastAPI) y persistencia analítica en ClickHouse DB.
