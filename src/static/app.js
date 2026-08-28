@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const tenantIdInput = document.getElementById("tenantId");
     const siteIdInput = document.getElementById("siteId");
-    const cameraIdInput = document.getElementById("cameraId");
+    const cameraSelector = document.getElementById("cameraSelector");
 
     const btnStartStream = document.getElementById("btnStartStream");
     const btnStopStream = document.getElementById("btnStopStream");
@@ -9,6 +9,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnSaveZones = document.getElementById("btnSaveZones");
     const btnPing = document.getElementById("btnPing");
     const btnClearConsole = document.getElementById("btnClearConsole");
+
+    // Modal de Alta de Cámara
+    const addCameraModal = document.getElementById("addCameraModal");
+    const btnOpenAddModal = document.getElementById("btnOpenAddModal");
+    const btnCloseAddModal = document.getElementById("btnCloseAddModal");
+    const btnCancelAddCamera = document.getElementById("btnCancelAddCamera");
+    const btnSubmitAddCamera = document.getElementById("btnSubmitAddCamera");
+
+    const newCameraIdInput = document.getElementById("newCameraId");
+    const newCameraIpInput = document.getElementById("newCameraIp");
+    const newCameraPortInput = document.getElementById("newCameraPort");
+    const newCameraPathInput = document.getElementById("newCameraPath");
+    const newCameraUserInput = document.getElementById("newCameraUser");
+    const newCameraPassInput = document.getElementById("newCameraPass");
 
     const streamImagePlayer = document.getElementById("streamImagePlayer");
     const zoneCanvas = document.getElementById("zoneCanvas");
@@ -84,6 +98,82 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Inicializar estado limpio desde el inicio
     setStreamState(false, "STANDBY");
+
+    // Modal Events
+    function openModal() { addCameraModal.classList.remove("hidden"); }
+    function closeModal() { addCameraModal.classList.add("hidden"); }
+
+    btnOpenAddModal.addEventListener("click", openModal);
+    btnCloseAddModal.addEventListener("click", closeModal);
+    btnCancelAddCamera.addEventListener("click", closeModal);
+
+    // Enviar Alta de Cámara Parametrizada
+    btnSubmitAddCamera.addEventListener("click", async () => {
+        const tenantId = tenantIdInput.value.trim() || "tenant_poc";
+        const siteId = siteIdInput.value.trim() || "site_home";
+
+        const cameraId = newCameraIdInput.value.trim();
+        const ip = newCameraIpInput.value.trim();
+        const port = newCameraPortInput.value.trim() || "554";
+        const streamPath = newCameraPathInput.value.trim() || "stream2";
+        const username = newCameraUserInput.value.trim();
+        const password = newCameraPassInput.value.trim();
+
+        if (!cameraId || !ip) {
+            alert("⚠️ Por favor complete el ID de Cámara y la IP.");
+            return;
+        }
+
+        logToConsole(`Enviando orden 'add_camera' para '${cameraId}' (${ip}:${port}/${streamPath})...`);
+
+        // Alta Optimista en el desplegable
+        let existingOption = Array.from(cameraSelector.options).find(opt => opt.value === cameraId);
+        if (!existingOption) {
+            const newOpt = document.createElement("option");
+            newOpt.value = cameraId;
+            newOpt.textContent = `${cameraId} (${ip})`;
+            cameraSelector.appendChild(newOpt);
+        }
+        cameraSelector.value = cameraId;
+
+        closeModal();
+
+        try {
+            const response = await fetch("/api/v1/commands", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    tenant_id: tenantId,
+                    site_id: siteId,
+                    action: "add_camera",
+                    payload: {
+                        camera_id: cameraId,
+                        ip: ip,
+                        port: parseInt(port, 10),
+                        username: username,
+                        password: password,
+                        stream_path: streamPath
+                    }
+                })
+            });
+
+            const data = await response.json();
+            if (response.ok && data.status === "success") {
+                const resPayload = data.response || {};
+                if (resPayload.status === "already_exists") {
+                    logToConsole("ℹ️ La cámara ya estaba registrada en Frigate NVR:", resPayload);
+                    alert(`ℹ️ Cámara '${cameraId}' ya estaba registrada en Frigate.`);
+                } else {
+                    logToConsole("✅ Nueva cámara agregada exitosamente a Frigate:", resPayload);
+                    alert(`✅ Cámara '${cameraId}' agregada a Frigate NVR.\n\nPresione 'Ver Cámara en Vivo' para iniciar el stream.`);
+                }
+            } else {
+                logToConsole("❌ Error registrando nueva cámara:", data);
+            }
+        } catch (err) {
+            logToConsole("🔥 Error de red en alta de cámara:", err.message);
+        }
+    });
 
     function updateZonesFromEdge(currentZones) {
         if (!currentZones || Object.keys(currentZones).length === 0) return;
@@ -229,7 +319,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btnSaveZones.addEventListener("click", async () => {
         const tenantId = tenantIdInput.value.trim() || "tenant_poc";
         const siteId = siteIdInput.value.trim() || "site_home";
-        const cameraId = cameraIdInput.value.trim() || "camara_ip";
+        const cameraId = cameraSelector.value || "camara_ip";
 
         // Escalar coordenadas a la resolución real de la cámara (1280x720)
         const cameraWidth = 1280;
@@ -315,7 +405,12 @@ document.addEventListener("DOMContentLoaded", () => {
     btnStartStream.addEventListener("click", async () => {
         const tenantId = tenantIdInput.value.trim() || "tenant_poc";
         const siteId = siteIdInput.value.trim() || "site_home";
-        const cameraId = cameraIdInput.value.trim() || "camara_ip";
+        const cameraId = cameraSelector.value;
+
+        if (!cameraId) {
+            alert("⚠️ Seleccione o agregue una cámara primero.");
+            return;
+        }
 
         logToConsole(`Solicitando stream limpio para cámara '${cameraId}' (${tenantId}/${siteId})...`);
         setStreamState(false, "CONECTANDO...");
@@ -363,7 +458,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btnStopStream.addEventListener("click", async () => {
         const tenantId = tenantIdInput.value.trim() || "tenant_poc";
         const siteId = siteIdInput.value.trim() || "site_home";
-        const cameraId = cameraIdInput.value.trim() || "camara_ip";
+        const cameraId = cameraSelector.value || "camara_ip";
 
         logToConsole(`Deteniendo sesión de transmisión para cámara '${cameraId}'...`);
 

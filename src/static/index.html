@@ -39,9 +39,15 @@
                     <input type="text" id="siteId" value="site_home" placeholder="ej: site_home">
                 </div>
 
+                <!-- Gestor Dinámico de Cámaras -->
                 <div class="form-group">
-                    <label for="cameraId">Cámara ID:</label>
-                    <input type="text" id="cameraId" value="camara_ip" placeholder="ej: camara_ip">
+                    <div class="label-row">
+                        <label for="cameraSelector">Cámara Seleccionada:</label>
+                        <button id="btnOpenAddModal" class="btn-link">➕ Nueva</button>
+                    </div>
+                    <select id="cameraSelector" class="select-input">
+                        <option value="" disabled selected>-- Sin cámaras (Agregá una con ➕ Nueva) --</option>
+                    </select>
                 </div>
 
                 <!-- Bloque de Nombres de Hitboxes (Preparado para Etapa 2) -->
@@ -101,6 +107,50 @@
             </div>
             <pre id="consoleOutput" class="console-log">-- Esperando comandos del usuario...</pre>
         </section>
+    </div>
+
+    <!-- Modal Formulario de Alta de Cámara -->
+    <div id="addCameraModal" class="modal-overlay hidden">
+        <div class="modal-card glass-panel">
+            <div class="modal-header">
+                <h3>➕ Agregar Nueva Cámara IP</h3>
+                <button id="btnCloseAddModal" class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newCameraId">ID de Cámara (Nombre único):</label>
+                    <input type="text" id="newCameraId" placeholder="ej: camara_ip">
+                </div>
+                <div class="form-group">
+                    <label for="newCameraIp">IP de la Cámara / Host (Obligatorio):</label>
+                    <input type="text" id="newCameraIp" placeholder="ej: 192.168.1.90">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="newCameraPort">Puerto RTSP (Opcional):</label>
+                        <input type="number" id="newCameraPort" value="554" placeholder="554">
+                    </div>
+                    <div class="form-group">
+                        <label for="newCameraPath">Path / Substream:</label>
+                        <input type="text" id="newCameraPath" value="stream2" placeholder="stream2">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="newCameraUser">Usuario RTSP (Opcional):</label>
+                        <input type="text" id="newCameraUser" placeholder="Opcional">
+                    </div>
+                    <div class="form-group">
+                        <label for="newCameraPass">Contraseña RTSP (Opcional):</label>
+                        <input type="password" id="newCameraPass" placeholder="Opcional">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnCancelAddCamera" class="btn btn-secondary">Cancelar</button>
+                <button id="btnSubmitAddCamera" class="btn btn-primary">Guardar Cámara</button>
+            </div>
+        </div>
     </div>
 
     <script src="/static/app.js"></script>
